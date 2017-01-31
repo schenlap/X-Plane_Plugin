@@ -185,7 +185,14 @@ void TeensyControls_new_item(teensy_t *t, int id, int type, const char *name, in
 	int index, datawritable = 0;
 
 	if (!t || !name || namelen >= 1024) return;
-	memcpy(str, name, namelen);
+	if (name[0] == '*' && name[1] == '2') {// expand *2 to sim/cockpit2
+		namelen -= 2; // size of acronym
+		sprintf(str, "sim/cockpit2");
+		memcpy(&str[12], &name[2], namelen);
+		namelen +=  12;
+	} else {
+		memcpy(str, name, namelen);
+	}
 	str[namelen] = 0;
 	index = parse_array_index(str);
 	if (type == 0) {
