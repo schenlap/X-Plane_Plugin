@@ -78,3 +78,6 @@ endif
 
 clean:
 	rm -f *.o TeensyControls.xpl linktest
+
+install:
+	cp $(TARGET) "/home/steve/X-Plane 10 Demo/Resources/plugins/XTeensy_lin.xpl"

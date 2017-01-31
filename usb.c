@@ -347,7 +347,7 @@ static void new_usb_device(struct udev_device *dev)
 {
 	struct udev_device *usb;
 	const char *str, *devname;
-	int vid=0, pid=0, is_teensy=0;
+	int vid=0, pid=0;
 	teensy_t *t;
 	int r, len, fd=-1;
 	const uint8_t signature[6]={0x06,0x1C,0xFF,0x0A,0x39,0xA7};
@@ -363,9 +363,7 @@ static void new_usb_device(struct udev_device *dev)
 	str = udev_device_get_sysattr_value(usb, "idProduct");
 	if (!str || sscanf(str, "%x", &pid) != 1) pid = 0;
 	str = udev_device_get_sysattr_value(usb, "product");
-	if (str && strstr(str, "Teensy")) is_teensy = 1;
 	//udev_device_unref(usb); // this does NOT need to be unref'd
-	if (!is_teensy) goto fail;
 	if (vid != 0x16C0) goto fail;
 	if (pid != 0x0488) goto fail;
 	printf("usb device: %s, vid:pid = %04X:%04X\n", devname, vid, pid);
@@ -375,6 +373,7 @@ static void new_usb_device(struct udev_device *dev)
 		printf("unable to open\n");
 		if (errno == EACCES) {
 			display("Teensy permission denied, please install udev rules");
+			printf("Teensy permission denied, please install udev rules");
 		} else {
 			display("Teensy unable to open, errno=%d", errno);
 		}
@@ -392,7 +391,7 @@ static void new_usb_device(struct udev_device *dev)
 	r = ioctl(fd, HIDIOCGRDESC, &desc);
 	printf("Teensy descriptors fetched, r = %d\n", r);
 	if (r < 0) goto fail;
-	if (memcmp(desc.value, signature, sizeof(signature)) != 0) goto fail;
+	//if (memcmp(desc.value, signature, sizeof(signature)) != 0) goto fail;
 	printf("Teensy descriptors confirmed\n");
 	t = TeensyControls_new_teensy();
 	if (!t) goto fail;
